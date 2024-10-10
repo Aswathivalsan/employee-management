@@ -73,5 +73,5 @@ class employee_list(APIView):
         except Employee.DoesNotExist:
             return Response({"error": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        employee.delete()
+        employees.delete()
         return Response({"message": "Employee deleted successfully"}, status=status.HTTP_200_OK)
