@@ -1,8 +1,10 @@
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework. decorators import api_view
+from rest_framework.views import APIView
 from.models import Employee
 from.serializers import EmployeeSerializer
+from rest_framework import status
 #@api_view(['GET']) 
 #def person(Request):
  #   if Request.method == 'GET':
@@ -21,64 +23,55 @@ def employee_details(request):
         }
         return  Response(empls)
 
-@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-def employee_list (request):
-    if request.method == 'GET':
-        objEmployee = Employee.objects.all() 
-        serializer = EmployeeSerializer(objEmployee, many=True)
-        return Response(serializer.data)
+class employee_list(APIView):
+    def get(self,request):
+    
+        employees = Employee.objects.all() 
+        serializer = EmployeeSerializer(employees, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK )
     
 
-    elif request.method == 'POST':
-        data = request.data
-        serializer = EmployeeSerializer(data=data)
+    def post(self,request):
+        serializer = EmployeeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response (serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    elif request.method == 'PUT':
-        data =request.data
-        emp_id =data.get('id',None)
-        if not emp_id:
-            return Response({"error": "Employee ID is required for update."}, status=400)
-        try:
-           obj = Employee.objects.get(id=emp_id)
-        except Employee.DoesNotExist:
-            return Response({"error": "Employee not found"}, status=404)
-        
-        serializer = EmployeeSerializer(obj, data =data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response (serializer.errors, status=400)
-    
+    def put(self,request):
+        emp_id =request.data.get('id')
 
-    elif request.method == 'PATCH':
-        data = request.data
-        emp_id =data.get('id',None)
-        if not emp_id:
-            return Response({"error": "Employee ID is required for updating an employee."}, status=400)
         try:
-            obj = Employee.objects.get(id=emp_id)
+            employees = Employee.objects.get(id=emp_id)
         except Employee.DoesNotExist:
-            return Response({"error": "Employee not found"}, status=404)
-        
-        serializer = EmployeeSerializer(obj, data =data, partial=True)
+                    return Response({"error": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = EmployeeSerializer(employees, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response (serializer.errors, status=400)
-    
-    elif request.method == 'DELETE':
-        data = request.data
-        emp_id =data.get('id',None)
-        if not emp_id:
-            return Response({"error": "Employee ID is required for updating an employee."}, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request):
+        emp_id = request.data.get('id')
         try:
-            obj = Employee.objects.get(id=emp_id)
+            employee = Employee.objects.get(id=emp_id)
         except Employee.DoesNotExist:
-            return Response({"error": "Employee not found"}, status=404)
+            return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        obj.delete()
-        return Response({'message': "Employee deleted successfully"}, status=204)
+        serializer = EmployeeSerializer(employee, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request):
+        emp_id = request.data.get('id')
+        if not emp_id:
+            return Response({"error": "Employee ID is required for deletion."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            employees = Employee.objects.get(id=emp_id)
+        except Employee.DoesNotExist:
+            return Response({"error": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        employee.delete()
+        return Response({"message": "Employee deleted successfully"}, status=status.HTTP_200_OK)
