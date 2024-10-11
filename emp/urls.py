@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-# from empapp.views import employee
+#from empapp.views import employee_list
+#from empapp.views import EmployeeViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('emp/',include("empapp.urls") )
+    
 
 
 ]
