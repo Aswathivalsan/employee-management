@@ -27,7 +27,7 @@ def employee_details(request):
 #         serializer = EmployeeSerializer(employees, many=True)
 #         return Response(serializer.data, status=status.HTTP_200_OK)
     
-#     # Handle POST request: Create a new employee
+#     
 #     elif request.method == 'POST':
 #         serializer = EmployeeSerializer(data=request.data)
 #         if serializer.is_valid():
@@ -37,7 +37,7 @@ def employee_details(request):
 
 #     elif request.method == 'PUT':
 #         try:
-#             # Extract the ID of the employee to update from the request
+#           
 #             employee_id = request.data.get('id')
 #             employee = Employee.objects.get(id=employee_id)
 #         except Employee.DoesNotExist:
@@ -75,6 +75,7 @@ def employee_details(request):
 #             return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
 
         #class base
+
 
 # class employee_list(APIView):
 #     def get(self,request):
@@ -157,7 +158,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        employee_id = kwargs.get('pk')
+        employee_id = kwargs.get('id')
         try:
             employee = self.get_object()
         except Employee.DoesNotExist:
@@ -170,7 +171,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
-        employee_id = kwargs.get('pk')
+        employee_id = kwargs.get('id')
         try:
             employee = self.get_object()
         except Employee.DoesNotExist:
